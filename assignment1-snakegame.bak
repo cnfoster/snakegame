@@ -46,11 +46,6 @@
 (define WIDTH 20)  ; units
 (define HEIGHT 20) ; units
 
-(define LEFT 1)
-(define RIGHT 2)
-(define UP 3)
-(define DOWN 4)
-
 (define G0 ; an initial game state
   (make-game (make-bug "up"
                        (make-posn (quotient WIDTH 2)
@@ -99,48 +94,27 @@
 
 ;; posn-advance : Posn Dir -> Posn
 ;; Advance the posn in given direction, but not past boundaries
-(define (posn-advance d p)
-  (cond [(= d LEFT) (posn-advance-left (make-posn (posn-x p) (posn-y p)))]
-        [(= d RIGHT) (posn-advance-right (make-posn (posn-x p) (posn-y p)))]
-        [(= d UP) (posn-advance-up (make-posn (posn-x p)(posn-y p)))]))
-
-(check-expect (posn-advance 1 (make-posn -1 14)) (posn-advance-left (make-posn 0 14)))
-(check-expect (posn-advance 2 (make-posn 21 17)) (posn-advance-right (make-posn 20 17)))
-
-
+(define (posn-advance p d)
+  ; stub
+  p)
 
 ;; posn-advance-left : Posn -> Posn
 ;; Advance the posn toward left, but not past left boundary
 (define (posn-advance-left p)
-  (if (> (posn-x p) 0)
-      (make-posn (sub1 (posn-x p)) (posn-y p))
-      (make-posn 0 (posn-y p))))
-
-(check-expect (posn-advance-left (make-posn -1 17)) (make-posn 0 17))
-(check-expect (posn-advance-left (make-posn 19 14)) (make-posn 18 14))
-(check-expect (posn-advance-left (make-posn 20 15)) (make-posn 19 15))
+  ; stub
+  p)
 
 ;; posn-advance-right : Posn -> Posn
 ;; Advance the posn toward right, but not past right boundary
 (define (posn-advance-right p)
-  (if (< (posn-x p) WIDTH)
-      (make-posn (add1 (posn-x p)) (posn-y p))
-      (make-posn WIDTH (posn-y p))))
-
-(check-expect (posn-advance-right (make-posn 6 9)) (make-posn 7 9))
-(check-expect (posn-advance-right (make-posn 21 19)) (make-posn 20 19))
-(check-expect (posn-advance-right (make-posn 8 20)) (make-posn 9 20))
+  ; stub
+  p)
 
 ;; posn-advance-up : Posn -> Posn
 ;; Advance the posn toward top, but not past top boundary
 (define (posn-advance-up p)
-    (if (> (posn-y p) 0)
-      (make-posn (posn-x p) (sub1 (posn-y p)))
-      (make-posn (posn-x p) 0)))
-
-(check-expect (posn-advance-up (make-posn 6 9)) (make-posn 6 8))
-(check-expect (posn-advance-up (make-posn 11 21)) (make-posn 11 20))
-(check-expect (posn-advance-up (make-posn 4 -1)) (make-posn 4 0))
+  ; stub
+  p)
 
 ;; posn-advance-down : Posn -> Posn
 ;; Advance the posn toward bottom, but not past bottom boundary
@@ -150,8 +124,6 @@
       (make-posn (posn-x p) HEIGHT)))
 
 (check-expect (posn-advance-down (make-posn 18 19)) (make-posn 18 20))
-(check-expect (posn-advance-down (make-posn 10 21)) (make-posn 10 20))
-(check-expect (posn-advance-down (make-posn 12 14)) (make-posn 12 15))
 
 ;; posn=? : Posn Posn -> Boolean
 ;; Are the two posns at the same position?
