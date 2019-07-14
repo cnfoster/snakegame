@@ -46,11 +46,6 @@
 (define WIDTH 20)  ; units
 (define HEIGHT 20) ; units
 
-(define LEFT 1)
-(define RIGHT 2)
-(define UP 3)
-(define DOWN 4)
-
 (define G0 ; an initial game state
   (make-game (make-bug "up"
                        (make-posn (quotient WIDTH 2)
@@ -69,13 +64,12 @@
 ;; game-advance : Game -> Game
 ;; Adance the bug, maybe eating the food
 (define (game-advance g)
-  ; stub
+  ; stub key
   g)
 
 ;; game-draw : Game -> Scene
 ;; Render the game as a scene
 (define (game-draw g)
-  ; stub
   (empty-scene (* WIDTH PX/U)
                (* HEIGHT PX/U)))
 
@@ -85,14 +79,24 @@
 ;; bug-change-dir : Bug Dir -> Bug
 ;; Change bug's direction to given one
 (define (bug-change-dir b d)
-  ; stub
-  b)
+    (cond [(string=? d "left") (posn-advance-left (make-posn (posn-x b) (posn-y b)))]
+        [(string=? d "right") (posn-advance-right (make-posn (posn-x b) (posn-y b)))]
+        [(string=? d "up") (posn-advance-up (make-posn (posn-x b)(posn-y b)))]
+        [(string=? d "down") (posn-advance-down (make-posn (posn-x b) (posn-y b)))]
+        [else
+         (make-posn (posn-x b) (posn-y b))]))
+
+(check-expect (bug-change-dir (make-posn 14 16) "left") (posn-advance-left (make-posn 14 16)))
+(check-expect (bug-change-dir (make-posn 14 16) "right") (posn-advance-right (make-posn 14 16)))
+(check-expect (bug-change-dir (make-posn 14 16) "up") (posn-advance-up (make-posn 14 16)))
+(check-expect (bug-change-dir (make-posn 14 16) "down") (posn-advance-down (make-posn 14 16)))
 
 ;; bug-advance : Bug -> Bug
 ;; Advance bug in its current direction, but not past board boundaries
+
 (define (bug-advance b)
-  ; stub
-  b)
+  (make-bug (bug-dir b) (posn-advance (bug-posn b) (bug-dir b))))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Posn functions
@@ -100,12 +104,18 @@
 ;; posn-advance : Posn Dir -> Posn
 ;; Advance the posn in given direction, but not past boundaries
 (define (posn-advance d p)
-  (cond [(= d LEFT) (posn-advance-left (make-posn (posn-x p) (posn-y p)))]
-        [(= d RIGHT) (posn-advance-right (make-posn (posn-x p) (posn-y p)))]
-        [(= d UP) (posn-advance-up (make-posn (posn-x p)(posn-y p)))]))
+  (cond [(string=? d "left") (posn-advance-left (make-posn (posn-x p) (posn-y p)))]
+        [(string=? d "right") (posn-advance-right (make-posn (posn-x p) (posn-y p)))]
+        [(string=? d "up") (posn-advance-up (make-posn (posn-x p)(posn-y p)))]
+        [(string=? d "down") (posn-advance-down (make-posn (posn-x p) (posn-y p)))]
+        [else
+         (make-posn (posn-x p) (posn-y p))]))
 
-(check-expect (posn-advance 1 (make-posn -1 14)) (posn-advance-left (make-posn 0 14)))
-(check-expect (posn-advance 2 (make-posn 21 17)) (posn-advance-right (make-posn 20 17)))
+(check-expect (posn-advance "left" (make-posn -1 14)) (posn-advance-left (make-posn 0 14)))
+(check-expect (posn-advance "right" (make-posn 21 17)) (posn-advance-right (make-posn 20 17)))
+(check-expect (posn-advance "up" (make-posn 2 -1)) (posn-advance-up (make-posn 2 0)))
+(check-expect (posn-advance "down" (make-posn 4 22)) (posn-advance-down (make-posn 4 20)))
+(check-expect (make-posn 2 7) (make-posn 2 7))
 
 
 
