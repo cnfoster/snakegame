@@ -15,11 +15,11 @@
 ;; Launches a game of "Bug" played at given tick rate
 ;; Example: (main 1/10)
 (define (main r)
-  (big-bang G0
+  (big-bang 0
     [to-draw game-draw]
-     [on-tick game-advance r]
-     [on-key]
+     [on-tick game-advance 1/5]
      [on-key game-handle-key]))
+     ;;[on-key game-handle-key]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Data Definitions
@@ -79,6 +79,8 @@
 
 (define (bug-advance b)
   (make-bug (bug-dir b) (posn-advance (bug-posn b) (bug-dir b))))
+
+
 
 ;; Posn Color Scene -> Scene
 ;; Draw bug at given position on the scene
@@ -200,8 +202,7 @@
 ;; game-advance : Game -> Game
 ;; Adance the bug, maybe eating the food
 (define (game-advance g)
-  ; stub key
-  g)
+  (add1 g))
 
 ;; game-draw : Game -> Scene
 ;; Render the game as a scene
@@ -219,11 +220,22 @@
     ;               (* PX/U 1) (* 20 PX/U)
      ;              (bug-draw-on (make-posn 0 0) "blue"))))
 
+(define (movex x)
+  (if (< (add1 x) WIDTH)
+      (add1 x)
+      (sub1 WIDTH)))
+
+(define (movey y)
+ (if (< (add1 y) HEIGHT)
+      (add1 y)
+      (sub1 HEIGHT)))
+
 (define (game-draw g)
-   (place-images (list (circle (* 1/2 PX/U) "solid" "blue")
-                       (circle (* 1/2 PX/U) "solid" "red"))
+   (place-images (list (circle (* 1/2 PX/U) "solid" "red")
+                       (circle (* 1/2 PX/U) "solid" "blue"))
                  (list (make-posn (random WIDTH) (random HEIGHT))
-                       (make-posn 50 50))
+                       (make-posn (movex g) (movey g)))
                  (rectangle 100 100 "solid" "black")))
 
-(game-draw 100)
+;(game-draw 50)
+(main 1/20)
