@@ -17,8 +17,9 @@
 (define (main r)
   (big-bang G0
     [to-draw game-draw]
-    [on-tick game-advance r]
-    [on-key game-handle-key]))
+     [on-tick game-advance r]
+     [on-key]
+     [on-key game-handle-key]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Data Definitions
@@ -42,9 +43,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Defined Constants
 
-(define PX/U 20) ; pixels per unit
-(define WIDTH 20)  ; units
-(define HEIGHT 20) ; units
+(define PX/U 10) ; pixels per unit
+(define WIDTH 99)  ; units
+(define HEIGHT 99) ; units
+
+
 
 (define G0 ; an initial game state
   (make-game (make-bug "up"
@@ -52,26 +55,6 @@
                                   (quotient HEIGHT 2)))
              (make-posn 0 0)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Game functions
-
-;; game-handle-key : Game KeyEvent -> Game
-;; Handle a key event in this game
-(define (game-handle-key g ke)
-  ; stub
-  g)
-
-;; game-advance : Game -> Game
-;; Adance the bug, maybe eating the food
-(define (game-advance g)
-  ; stub key
-  g)
-
-;; game-draw : Game -> Scene
-;; Render the game as a scene
-(define (game-draw g)
-  (empty-scene (* WIDTH PX/U)
-               (* HEIGHT PX/U)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Bug functions
@@ -97,6 +80,16 @@
 (define (bug-advance b)
   (make-bug (bug-dir b) (posn-advance (bug-posn b) (bug-dir b))))
 
+;; Posn Color Scene -> Scene
+;; Draw bug at given position on the scene
+;(define (bug-draw-on p color scn)
+(define (bug-draw-on p color)
+ (circle (* 1/2 PX/U) "solid" color))
+  ;(underlay (place-image (circle (* 1/2 PX/U) "solid" color) (posn-x p) (posn-y p) scn)))
+ ;(place-image (circle (* 1/2 PX/U) "solid" color)
+ ;              (+ (* (posn-x p) PX/U) (* 1/2 PX/U))
+ ;              (+ (* (posn-y p) PX/U) (* 1/2 PX/U))
+ ;              scn))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Posn functions
@@ -112,9 +105,9 @@
          (make-posn (posn-x p) (posn-y p))]))
 
 (check-expect (posn-advance "left" (make-posn -1 14)) (posn-advance-left (make-posn 0 14)))
-(check-expect (posn-advance "right" (make-posn 21 17)) (posn-advance-right (make-posn 20 17)))
+(check-expect (posn-advance "right" (make-posn 21 17)) (posn-advance-right (make-posn 21 17)))
 (check-expect (posn-advance "up" (make-posn 2 -1)) (posn-advance-up (make-posn 2 0)))
-(check-expect (posn-advance "down" (make-posn 4 22)) (posn-advance-down (make-posn 4 20)))
+(check-expect (posn-advance "down" (make-posn 4 22)) (posn-advance-down (make-posn 4 22)))
 (check-expect (make-posn 2 7) (make-posn 2 7))
 
 
@@ -133,12 +126,12 @@
 ;; posn-advance-right : Posn -> Posn
 ;; Advance the posn toward right, but not past right boundary
 (define (posn-advance-right p)
-  (if (< (posn-x p) WIDTH)
+  (if (< (posn-x p) (sub1 WIDTH))
       (make-posn (add1 (posn-x p)) (posn-y p))
-      (make-posn WIDTH (posn-y p))))
+      (make-posn (sub1 WIDTH) (posn-y p))))
 
 (check-expect (posn-advance-right (make-posn 6 9)) (make-posn 7 9))
-(check-expect (posn-advance-right (make-posn 21 19)) (make-posn 20 19))
+(check-expect (posn-advance-right (make-posn 21 19)) (make-posn 22 19))
 (check-expect (posn-advance-right (make-posn 8 20)) (make-posn 9 20))
 
 ;; posn-advance-up : Posn -> Posn
@@ -155,12 +148,12 @@
 ;; posn-advance-down : Posn -> Posn
 ;; Advance the posn toward bottom, but not past bottom boundary
 (define (posn-advance-down p)
-  (if (< (posn-y p) HEIGHT)
+  (if (< (posn-y p) (sub1 HEIGHT))
       (make-posn (posn-x p) (add1 (posn-y p)))
-      (make-posn (posn-x p) HEIGHT)))
+      (make-posn (posn-x p) (sub1 HEIGHT))))
 
 (check-expect (posn-advance-down (make-posn 18 19)) (make-posn 18 20))
-(check-expect (posn-advance-down (make-posn 10 21)) (make-posn 10 20))
+(check-expect (posn-advance-down (make-posn 10 21)) (make-posn 10 22))
 (check-expect (posn-advance-down (make-posn 12 14)) (make-posn 12 15))
 
 ;; posn=? : Posn Posn -> Boolean
@@ -177,8 +170,60 @@
 
 ;; posn-draw-on : Posn Color Scene -> Scene
 ;; Draw a colored circled at given posn on scene
-(define (posn-draw-on p color scn)
-  (place-image (circle (* 1/2 PX/U) "solid" color)
-               (+ (* (posn-x p) PX/U) (* 1/2 PX/U))
-               (+ (* (posn-y p) PX/U) (* 1/2 PX/U))
-               scn))
+;(define (posn-draw-on p color scn)
+(define (posn-draw-on p color)
+  (circle (* 1/2 PX/U) "solid" color))
+  ;(place-image (circle (* 1/2 PX/U) "solid" color)
+  ;             (+ (* (posn-x p) PX/U) (* 1/2 PX/U))
+  ;             (+ (* (posn-y p) PX/U) (* 1/2 PX/U))
+  ;             scn))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Game functions
+
+;; game-handle-key : Game KeyEvent -> Game
+;; Handle a key event in this game
+(define (game-handle-key g ke)
+  (cond [(key=? ke "left") (make-bug "left" (posn-advance-left (make-posn (posn-x g)(posn-y g))))]))
+        ;[(key=? ke "right") (posn-advance-right (make-posn (posn-x g) (posn-y g)))]
+        ;[(key=? ke "up") (posn-advance-up (make-posn (posn-x g)(posn-y g)))]
+        ;[(key=? ke "down") (posn-advance-down (make-posn (posn-x g)(posn-y g)))]))
+
+(check-expect (game-handle-key (make-posn 10 17) "left") (make-bug "left" (posn-advance-left (make-posn 10 17))))
+;(check-expect (game-handle-key (make-posn 10 17) "right") (posn-advance-right (make-posn 10 17)))
+;(check-expect (game-handle-key (make-posn 10 17) "up") (posn-advance-up (make-posn 10 17)))
+;(check-expect (game-handle-key (make-posn 10 17) "down") (posn-advance-down (make-posn 10 17)))
+
+
+        
+
+;; game-advance : Game -> Game
+;; Adance the bug, maybe eating the food
+(define (game-advance g)
+  ; stub key
+  g)
+
+;; game-draw : Game -> Scene
+;; Render the game as a scene
+
+;;(define (game-draw g)
+  ;(overlay/offset (posn-draw-on (make-posn 19 17) "yellow" (createBoard HEIGHT WIDTH))
+   ;               -503 20
+    ;       (bug-draw-on (make-posn 0 1) "blue" (createBoard HEIGHT WIDTH))))
+
+
+;(define (game-draw g)
+ ; (underlay/offset (empty-scene (* PX/U HEIGHT) (* PX/U WIDTH))
+  ;          0 1
+   ;         (underlay/offset (posn-draw-on (make-posn 19 17) "yellow")
+    ;               (* PX/U 1) (* 20 PX/U)
+     ;              (bug-draw-on (make-posn 0 0) "blue"))))
+
+(define (game-draw g)
+   (place-images (list (circle (* 1/2 PX/U) "solid" "blue")
+                       (circle (* 1/2 PX/U) "solid" "red"))
+                 (list (make-posn (random WIDTH) (random HEIGHT))
+                       (make-posn 50 50))
+                 (rectangle 100 100 "solid" "black")))
+
+(game-draw 100)
